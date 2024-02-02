@@ -1,0 +1,12 @@
+# Common Configuration
+# Listener Configuration
+http:
+  host: "0.0.0.0"
+  readTimeout: "30000"
+  port: "8081"
+  
+wsdl:
+  wsdlLocation: "http://www.dneonline.com/calculator.asmx?WSDL"
+  service: "Calculator"
+  port: "CalculatorSoap"
+  address: "http://www.dneonline.com/calculator.asmx"

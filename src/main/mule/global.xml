@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:adtalem-core="http://www.mulesoft.org/schema/mule/adtalem-core"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core 
+http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/adtalem-core http://www.mulesoft.org/schema/mule/adtalem-core/current/mule-adtalem-core.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="HTTP_Listener_config"
+		doc:name="HTTP Listener config"
+		doc:id="ef55107d-4499-4564-83af-b35453103ae9">
+		<http:listener-connection host="${http.host}"
+			port="${http.port}" readTimeout="${http.readTimeout}"/>
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="73d4f00c-8470-40d3-941f-802ac68d1943" >
+		<wsc:connection wsdlLocation="${wsdl.wsdlLocation}" service="Calculator" port="${wsdl.port}" address="${wsdl.address}" />
+	</wsc:config>
+	<configuration doc:name="Configuration" doc:id="b97ab595-1c5c-4ec1-9e38-cb02f37bd9e5" defaultErrorHandler-ref="common-exception-handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="8db91c1c-25b3-4320-bc60-604c27bd7e40" file="properties\common\common.yaml" />
+</mule>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	
+	<flow name="soapserviceFlow" doc:id="1fcfaa47-37b7-4480-9a23-2fc8fe83476f" >
+		
+		<http:listener doc:name="Listener" doc:id="aeb31fa9-b899-4fdf-806c-8c0c60cc2e74" config-ref="HTTP_Listener_config" path="/{action}"/>
+		<set-variable value="#[attributes.uriParams.action]" doc:name="Set Variable" doc:id="47325a3e-190d-4d0f-9f37-b0e5222455cd" variableName="action"/>
+		<choice doc:name="Choice" doc:id="0f16960a-bb86-41ff-8b5e-f0cad4d97944" >
+			<when expression='#[vars.action ~= "Add"]'>
+				<ee:transform doc:name="Input payload" doc:id="f93a458d-d9ef-4c77-891e-13fa0db66b28" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Add: {
+		ns0#intA: payload.Value1,
+		ns0#intB: payload.Value2
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume operation="Add" doc:name="Consume1" doc:id="124445dc-d289-4b87-8c7f-d2391f61a6b7" config-ref="Web_Service_Consumer_Config" />
+				<ee:transform doc:name="Output Response" doc:id="4255b029-a8c9-4114-afef-3caea2755a39" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0ns ns0 http://tempuri.org/
+
+output application/xml
+---
+{
+	Result: {
+		Operation: vars.action,
+		ResultValue: payload.body.ns0#AddResponse.ns0#AddResult
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.action ~= "Multiply"]'>
+				<ee:transform doc:name="Input payload" doc:id="cb0e902f-e934-4071-bcec-9609607c03ef" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Multiply: {
+		ns0#intA: payload.Value1,
+		ns0#intB: payload.Value2
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume operation="Multiply" doc:name="Consume" doc:id="8a7213bc-7036-452e-8ecd-b79b83bfd34a" config-ref="Web_Service_Consumer_Config" />
+				<ee:transform doc:name="Output Response" doc:id="b59c9994-c8d1-4e04-8f81-068f7a97aff8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0ns ns0 http://tempuri.org/
+
+output application/xml
+---
+{
+	Result: {
+		Operation: vars.action,
+		ResultValue: payload.body.ns0#MultiplyResponse.ns0#MultiplyResult
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<raise-error doc:name="Raise error" doc:id="8bb59bb2-8134-4f46-a58d-fd3537f90f57" type="CUSTOM:INVALID_OPERATION" description="Operation doesnot exist currently"/>
+			</otherwise>
+		</choice>
+		<error-handler ref="common-exception-handler" />
+	</flow>
+</mule>
